@@ -10,10 +10,8 @@ from mitmproxy.proxy import config
 loader = tornado.template.Loader(data.pkg_data.path("addons/onboardingapp/templates"))
 
 
-class Adapter(tornado.wsgi.WSGIAdapter):
-    # Tornado doesn't make the WSGI environment available to pages, so this
-    # hideous monkey patch is the easiest way to get to the mitmproxy.master
-    # variable.
+class Adapter(tornado.httpserver.HTTPServer):
+    # Trying the new HTTPServer class
 
     def __init__(self, application):
         self._application = application
@@ -24,7 +22,7 @@ class Adapter(tornado.wsgi.WSGIAdapter):
 
     def __call__(self, environ, start_response):
         self.environ = environ
-        return tornado.wsgi.WSGIAdapter.__call__(
+        return tornado.httpserver.HTTPServer.__call__(
             self,
             environ,
             start_response
